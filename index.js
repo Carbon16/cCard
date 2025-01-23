@@ -3,7 +3,7 @@
 const express = require('express');
 const { spawn } = require('child_process');
 const pyProg = spawn('python', ['uid.py']);
-const maraiDB = require('maraidb');
+const maraiDB = require('mariadb');
 //connect to db
 const connection = maraiDB.createConnection({
     host: 'localhost',
