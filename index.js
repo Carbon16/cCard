@@ -7,7 +7,7 @@ const pyProg = spawn('python', ['uid.py']);
 
 const pool = mariadb.createPool({
     host: 'localhost',
-    user: 'root',
+    user: 'sking',
     password: 'Tritium1769',
     database: 'poker',
     connectionLimit: 5
