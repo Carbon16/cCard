@@ -58,11 +58,12 @@ app.get('/user/:uid', (req, res) => {
         });
 });
 
-app.get('/scan', (req, res) => {
+app.get('/scan', async (req, res) => {
     // scan the users card
-    uid = pyProg.stdout.on('data', function(data) {
+    uid = await pyProg.stdout.on('data', function(data) {
         return data.toString();
     });
+    console.log(uid)
     res.send(uid);
 });
 
