@@ -1,62 +1,71 @@
-//run uid.py as a child process and get the output and display it in the console
-// connect to maraiDB and insert the data into the database
+const mariadb = require('mariadb');
 const express = require('express');
+const app = express();
 const { spawn } = require('child_process');
 const pyProg = spawn('python', ['uid.py']);
-const maraiDB = require('mariadb');
-//connect to db
-const connection = maraiDB.createConnection({
+
+
+const pool = mariadb.createPool({
     host: 'localhost',
     user: 'root',
     password: 'Tritium1769',
-    database: 'poker'
+    database: 'poker',
+    connectionLimit: 5
 });
 
-const app = express();
+pool.getConnection()
+    .then(conn => {
+        console.log('Connected to MariaDB');
 
-//if table does not exist create it
-connection.connect(function(err) {
-    if (err) throw err;
-    console.log('Connected!');
-    var sql = "CREATE TABLE IF NOT EXISTS users (name VARCHAR(255) AUTO_INCREMENT PRIMARY KEY, uid INT, credit INT)";
-    connection.query(sql, function(err, result) {
-        if (err) throw err;
-        console.log("Table created");
-    });
-    var sql = "CREATE TABLE IF NOT EXISTS transaction (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), credit INT, sign CHAR(1), date TIMESTAMP)";
-    connection.query(sql, function(err, result) {
-        if (err) throw err;
-        console.log("Table created");
-    });
+        conn.query("CREATE TABLE IF NOT EXISTS users (name VARCHAR(255), uid INT, credit INT)")
+            .then(() => {
+                console.log("Table created or already exists");
+            })
+    }).catch(err => {
+        console.log('Error connecting to MariaDB');
+        pool.end();
 });
 
-pyProg.stdout.on('data', function(data) {
-    console.log(data.toString());
+app.get('/user', (req, res) => {
+    pool.getConnection()
+        .then(conn => {
+            conn.query("SELECT * FROM users")
+                .then(rows => {
+                    res.send(rows);
+                })
+                .catch(err => {
+                    res.send(err);
+                })
+                .finally(() => {
+                    conn.release();
+                });
+        });
 });
 
-app.get('/register/:name', (req, res) => {
-    //insert into users (name, uid, credit) values ('name', uid, 0)
-    //get uid from python script
+app.get('/user/:uid', (req, res) => {
+    pool.getConnection()
+        .then(conn => {
+            conn.query("SELECT * FROM users WHERE uid = ?", [req.params.uid])
+                .then(rows => {
+                    res.send(rows);
+                })
+                .catch(err => {
+                    res.send(err);
+                })
+                .finally(() => {
+                    conn.release();
+                });
+        });
+});
+
+app.get('/scan', (req, res) => {
+    // scan the users card
     uid = pyProg.stdout.on('data', function(data) {
         return data.toString();
     });
-    var sql = `INSERT INTO users (name, uid, credit) VALUES ('${req.params.name}', ${uid}, 350)`;
-    connection.query(sql, function(err, result) {
-        if (err) throw err;
-        console.log(`${req.params.name} inserted`);
-    });
-    res.sendStatus(201);
+    res.send(uid);
 });
 
-app.get('/read', (req, res) => {
-    //get uid from python script and return a user with that uid
-    uid = pyProg.stdout.on('data', function(data) {
-        return data.toString();
-    });
-    var sql = `SELECT * FROM users WHERE uid = ${uid}`;
-    connection.query(sql, function(err, result) {
-        if (err) throw err;
-        console.log(result);
-    });
-    res.send(result);
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
 });
