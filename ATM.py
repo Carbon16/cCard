@@ -31,7 +31,7 @@ def read_uid():
 
 def main():
     #lcd.clear()
-    lcd.write_string("1:R | 2:W | 3:D | 4:B")
+    lcd.write_string("1:Reg | 2:Wit | 3:Dep | 4:Bal")
     option = input("Enter option: ")
     if option == "1":
         register()
