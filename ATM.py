@@ -69,6 +69,7 @@ def withdraw():
     credit = cur.fetchone()[0]
     cur.execute("UPDATE users SET credit=? WHERE uid=?", (credit-int(amount), uid))
     conn.commit()
+    lcd.clear()
     lcd.write_string(amount + " withdrawn")
     sleep(3)
 
