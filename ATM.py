@@ -51,6 +51,7 @@ def register():
     lcd.clear()
     lcd.write_string("Present card")
     uid = read_uid()
+    print(uid)
     cur.execute("INSERT INTO users (name, uid, credit) VALUES (?, ?, ?)", (name, uid, 350))
     conn.commit()
     lcd.clear()
