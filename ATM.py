@@ -94,8 +94,10 @@ def check_balance():
     uid = read_uid()
     cur.execute("SELECT credit FROM users WHERE uid=?", (uid,))
     credit = cur.fetchone()[0]
+    cur.execute("SELECT name FROM users WHERE uid=?", (uid,))
+    name = cur.fetchone()[0]
     lcd.clear()
-    lcd.write_string("Balance: " + str(credit))
+    lcd.write_string(name +  "'s balance: " + str(credit))
     sleep(3)
 
 while True:
