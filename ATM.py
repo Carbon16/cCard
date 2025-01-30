@@ -30,7 +30,7 @@ def read_uid():
     return reader.read_id()
 
 def main():
-    #lcd.clear()
+    lcd.clear()
     lcd.write_string("1:Reg | 2:Wit | 3:Dep | 4:Bal")
     option = input("Enter option: ")
     if option == "1":
@@ -45,19 +45,20 @@ def main():
         lcd.write_string("Invalid option")
 
 def register():
-    #lcd.clear()
+    lcd.clear()
+    lcd.write_string("Enter name")
     name = input("Enter name: ")
-    #lcd.clear()
+    lcd.clear()
     lcd.write_string("Present card")
     uid = read_uid()
     cur.execute("INSERT INTO users (name, uid, credit) VALUES (?, ?, ?)", (name, uid, 350))
     conn.commit()
-    #lcd.clear()
+    lcd.clear()
     lcd.write_string(name + " registered")
     sleep(3)
 
 def withdraw():
-    #lcd.clear()
+    lcd.clear()
     lcd.write_string("Present card")
     uid = read_uid()
     amount = input("Enter amount to withdraw: ")
@@ -69,7 +70,7 @@ def withdraw():
     sleep(3)
 
 def deposit():
-    #lcd.clear()
+    lcd.clear()
     lcd.write_string("Present card")
     uid = read_uid()
     amount = input("Enter amount to deposit: ")
@@ -77,17 +78,17 @@ def deposit():
     credit = cur.fetchone()[0]
     cur.execute("UPDATE users SET credit=? WHERE uid=?", (credit+int(amount), uid))
     conn.commit()
-    #lcd.clear()
+    lcd.clear()
     lcd.write_string(amount + " deposited")
     sleep(3)
 
 def check_balance():
-    #lcd.clear()
+    lcd.clear()
     lcd.write_string("Present card")
     uid = read_uid()
     cur.execute("SELECT credit FROM users WHERE uid=?", (uid,))
     credit = cur.fetchone()[0]
-    #lcd.clear()
+    lcd.clear()
     lcd.write_string("Balance: " + str(credit))
     sleep(3)
 
