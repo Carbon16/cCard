@@ -62,6 +62,8 @@ def withdraw():
     lcd.clear()
     lcd.write_string("Present card")
     uid = read_uid()
+    lcd.clear()
+    lcd.write_string("Enter amount to withdraw")
     amount = input("Enter amount to withdraw: ")
     cur.execute("SELECT credit FROM users WHERE uid=?", (uid,))
     credit = cur.fetchone()[0]
@@ -74,6 +76,8 @@ def deposit():
     lcd.clear()
     lcd.write_string("Present card")
     uid = read_uid()
+    lcd.clear()
+    lcd.write_string("Enter amount to deposit")
     amount = input("Enter amount to deposit: ")
     cur.execute("SELECT credit FROM users WHERE uid=?", (uid,))
     credit = cur.fetchone()[0]
