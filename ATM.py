@@ -4,8 +4,8 @@ import mariadb
 import sys
 from time import sleep
 from RPLCD.i2c import CharLCD
-#lcd = CharLCD(i2c_expander='PCF8574', address=0x27, port=1, cols=16, rows=2, dotsize=8)
-#lcd.clear()
+lcd = CharLCD(i2c_expander='PCF8574', address=0x27, port=1, cols=16, rows=2, dotsize=8)
+lcd.clear()
 #replace "print" with "lcd.write_string" to display on LCD.
 
 
@@ -17,7 +17,7 @@ try:
         database="poker"
 )
 except mariadb.Error as e:
-    print(f"Error connecting to MariaDB Platform: {e}")
+    lcd.write_string(f"Error connecting to MariaDB Platform: {e}")
     sys.exit(1)
 # create database
 cur = conn.cursor()
@@ -31,7 +31,7 @@ def read_uid():
 
 def main():
     #lcd.clear()
-    print("Select an option:\n1. Register\n2. Withdraw\n3. Deposit\n4. Check Balance")
+    lcd.write_string("Select an option:\n1. Register\n2. Withdraw\n3. Deposit\n4. Check Balance")
     option = input("Enter option: ")
     if option == "1":
         register()
@@ -42,35 +42,35 @@ def main():
     elif option == "4":
         check_balance()
     else:
-        print("Invalid option")
+        lcd.write_string("Invalid option")
 
 def register():
     #lcd.clear()
     name = input("Enter name: ")
     #lcd.clear()
-    print("Present card")
+    lcd.write_string("Present card")
     uid = read_uid()
     cur.execute("INSERT INTO users (name, uid, credit) VALUES (?, ?, ?)", (name, uid, 350))
     conn.commit()
     #lcd.clear()
-    print(name + " registered")
+    lcd.write_string(name + " registered")
     sleep(3)
 
 def withdraw():
     #lcd.clear()
-    print("Present card")
+    lcd.write_string("Present card")
     uid = read_uid()
     amount = input("Enter amount to withdraw: ")
     cur.execute("SELECT credit FROM users WHERE uid=?", (uid,))
     credit = cur.fetchone()[0]
     cur.execute("UPDATE users SET credit=? WHERE uid=?", (credit-int(amount), uid))
     conn.commit()
-    print(amount + " withdrawn")
+    lcd.write_string(amount + " withdrawn")
     sleep(3)
 
 def deposit():
     #lcd.clear()
-    print("Present card")
+    lcd.write_string("Present card")
     uid = read_uid()
     amount = input("Enter amount to deposit: ")
     cur.execute("SELECT credit FROM users WHERE uid=?", (uid,))
@@ -78,17 +78,17 @@ def deposit():
     cur.execute("UPDATE users SET credit=? WHERE uid=?", (credit+int(amount), uid))
     conn.commit()
     #lcd.clear()
-    print(amount + " deposited")
+    lcd.write_string(amount + " deposited")
     sleep(3)
 
 def check_balance():
     #lcd.clear()
-    print("Present card")
+    lcd.write_string("Present card")
     uid = read_uid()
     cur.execute("SELECT credit FROM users WHERE uid=?", (uid,))
     credit = cur.fetchone()[0]
     #lcd.clear()
-    print("Balance: " + str(credit))
+    lcd.write_string("Balance: " + str(credit))
     sleep(3)
 
 while True:
